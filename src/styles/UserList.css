@@ -1,0 +1,60 @@
+/* src/styles/UserList.css */
+.user-list {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  text-align: left;
+}
+
+.user-list h2 {
+  margin-bottom: 20px;
+}
+
+.user-list .search-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+.user-list .search-bar input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.user-list .search-bar .select {
+  flex: 1;
+}
+
+.user-list ul {
+  list-style: none;
+  padding: 0;
+}
+
+.user-list li {
+  margin: 10px 0;
+  padding: 10px;
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.user-list li:hover {
+  background: #f1f1f1;
+}
+
+.user-list h3 {
+  margin: 0;
+}
+
+.user-list p {
+  margin: 5px 0;
+}

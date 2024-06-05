@@ -1,0 +1,227 @@
+/* src/styles/StudyGroup.css */
+.study-group {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  font-family: Arial, sans-serif;
+}
+
+.study-group h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.study-group .study-group-form,
+.study-group .study-group-list,
+.study-group .study-group-detail {
+  margin-bottom: 20px;
+}
+
+.study-group-form {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.study-group-form h2 {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.study-group-form input[type="text"],
+.study-group-form input[type="number"],
+.study-group-form textarea {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.study-group-form textarea {
+  resize: none;
+  height: 100px;
+}
+
+.study-group-form button {
+  padding: 10px 20px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.study-group-form button:hover {
+  background-color: #0056b3;
+}
+
+.study-group-form .react-select__control {
+  margin-bottom: 10px;
+}
+
+.study-group-list {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.study-group-list h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.study-group-list ul {
+  list-style: none;
+  padding: 0;
+}
+
+.study-group-list ul li {
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: #f9f9f9;
+}
+
+.study-group-list ul li h3 {
+  margin: 0 0 5px 0;
+}
+
+.study-group-list ul li p {
+  margin: 0;
+}
+
+.study-group-list ul li a {
+  text-decoration: none;
+  color: #007bff;
+}
+
+.study-group-list ul li a:hover {
+  text-decoration: underline;
+}
+
+.study-group-list ul li button {
+  margin-left: 10px;
+  padding: 5px 10px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.study-group-list ul li button:hover {
+  background-color: #0056b3;
+}
+
+.study-group-detail {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.study-group-detail h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.study-group-detail h3 {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.study-group-detail h4 {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.study-group-detail ul {
+  list-style: none;
+  padding: 0;
+}
+
+.study-group-detail ul li {
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: #f9f9f9;
+}
+
+.study-group-detail ul li button {
+  margin-left: 10px;
+  padding: 5px 10px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.study-group-detail ul li button:hover {
+  background-color: #0056b3;
+}
+
+.button-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+.create-group-link,
+.study-group-list-link {
+  text-decoration: none;
+}
+
+.button-container button {
+  padding: 10px 20px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.button-container button:hover {
+  background-color: #0056b3;
+}
+
+.detail-buttons {
+  display: flex;
+  justify-content: space-between;
+}
+
+.detail-buttons button {
+  padding: 10px 20px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  border-radius: 4px;
+  margin-top: 20px;
+}
+
+.detail-buttons button:hover {
+  background-color: #0056b3;
+}
