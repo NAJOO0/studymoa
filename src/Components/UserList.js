@@ -17,9 +17,10 @@ const UserList = () => {
       if (key.startsWith("profile_")) {
         const profile = JSON.parse(localStorage.getItem(key));
         if (
-          profile.visibility === "public" ||
-          (profile.visibility === "study-members" &&
-            checkStudyMember(profile.id))
+          profile.id !== parseInt(userId) && // 현재 사용자의 프로필을 제외
+          (profile.visibility === "public" ||
+            (profile.visibility === "study-members" &&
+              checkStudyMember(profile.id)))
         ) {
           userList.push(profile);
         }
@@ -60,9 +61,9 @@ const UserList = () => {
       const group = groups.find((group) => group.id === selectedGroup.value);
       if (group) {
         return (
-          group.members.includes(profileId) ||
-          group.applicants.includes(profileId) ||
-          (group.invited && group.invited.includes(profileId))
+          group.members.includes(parseInt(profileId)) ||
+          group.applicants.includes(parseInt(profileId)) ||
+          (group.invited && group.invited.includes(parseInt(profileId)))
         );
       }
     }
@@ -89,8 +90,8 @@ const UserList = () => {
       if (!group.invited) {
         group.invited = [];
       }
-      if (!group.invited.includes(profileId)) {
-        group.invited.push(profileId);
+      if (!group.invited.includes(parseInt(profileId))) {
+        group.invited.push(parseInt(profileId));
         localStorage.setItem("studyGroups", JSON.stringify(groups));
         alert("User invited successfully!");
       } else {

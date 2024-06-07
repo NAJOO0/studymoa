@@ -1,19 +1,36 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import Select from "react-select";
 import "../styles/StudyGroupForm.css";
+
+const topicOptions = [
+  { value: "web-development", label: "Web Development" },
+  { value: "app-development", label: "App Development" },
+  { value: "ai", label: "AI" },
+  { value: "nlp", label: "NLP" },
+  { value: "data-science", label: "Data Science" },
+  { value: "cyber-security", label: "Cyber Security" },
+  { value: "cloud-computing", label: "Cloud Computing" },
+  { value: "blockchain", label: "Blockchain" },
+  { value: "iot", label: "IoT" },
+  { value: "game-development", label: "Game Development" },
+  { value: "ar-vr", label: "AR/VR" },
+];
 
 const StudyGroupForm = ({ onSave, editingGroup }) => {
   const { userId } = useParams();
   const navigate = useNavigate();
   const [group, setGroup] = useState({
+    id: editingGroup ? editingGroup.id : Date.now(),
     title: "",
     description: "",
-    topic: "",
+    topic: null,
     maxMembers: 10,
-    members: [],
+    members: [parseInt(userId)],
     applicants: [],
     leaderId: parseInt(userId),
     invited: [],
+    withdrawalCondition: 3, // Default value for auto withdrawal condition
   });
 
   useEffect(() => {
@@ -22,12 +39,8 @@ const StudyGroupForm = ({ onSave, editingGroup }) => {
     }
   }, [editingGroup]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setGroup({
-      ...group,
-      [name]: value,
-    });
+  const handleChange = (field, value) => {
+    setGroup({ ...group, [field]: value });
   };
 
   const handleSubmit = (e) => {
@@ -46,7 +59,8 @@ const StudyGroupForm = ({ onSave, editingGroup }) => {
             type="text"
             name="title"
             value={group.title}
-            onChange={handleChange}
+            onChange={(e) => handleChange("title", e.target.value)}
+            required
           />
         </label>
         <label>
@@ -54,16 +68,18 @@ const StudyGroupForm = ({ onSave, editingGroup }) => {
           <textarea
             name="description"
             value={group.description}
-            onChange={handleChange}
+            onChange={(e) => handleChange("description", e.target.value)}
+            required
           ></textarea>
         </label>
         <label>
           Topic:
-          <input
-            type="text"
-            name="topic"
-            value={group.topic.label}
-            onChange={handleChange}
+          <Select
+            options={topicOptions}
+            value={group.topic}
+            onChange={(selectedOption) => handleChange("topic", selectedOption)}
+            placeholder="Select Topic"
+            required
           />
         </label>
         <label>
@@ -72,7 +88,22 @@ const StudyGroupForm = ({ onSave, editingGroup }) => {
             type="number"
             name="maxMembers"
             value={group.maxMembers}
-            onChange={handleChange}
+            onChange={(e) => handleChange("maxMembers", e.target.value)}
+            min="1"
+            required
+          />
+        </label>
+        <label>
+          Auto Withdrawal Condition (Number of Failures):
+          <input
+            type="number"
+            name="withdrawalCondition"
+            value={group.withdrawalCondition}
+            onChange={(e) =>
+              handleChange("withdrawalCondition", e.target.value)
+            }
+            min="1"
+            required
           />
         </label>
         <button type="submit">

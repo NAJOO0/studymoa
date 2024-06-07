@@ -1,0 +1,77 @@
+.goal-detail {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  text-align: left;
+}
+
+.goal-detail h2 {
+  margin: 10px 0; /* Add some margin */
+  text-align: center; /* Center align the title */
+}
+
+.goal-detail ul {
+  list-style: none;
+  padding: 0;
+}
+
+.goal-detail li {
+  margin: 10px 0;
+  padding: 10px;
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.goal-detail li:hover {
+  background: #f1f1f1;
+}
+
+.goal-detail h3 {
+  margin-top: 0;
+}
+
+.goal-detail textarea,
+.goal-detail input[type="file"],
+.goal-detail button {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.goal-detail button {
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.goal-detail button:hover {
+  background-color: #0056b3;
+}
+
+.goal-detail .buttons {
+  display: flex;
+  justify-content: flex-start; /* Align the button to the left */
+  margin-bottom: 10px; /* Add some margin */
+}
+
+.back-home-button {
+  padding: 7px; /* Reduce button padding */
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8em; /* Reduce button font size */
+}
+
+.back-home-button:hover {
+  background-color: #0056b3;
+}

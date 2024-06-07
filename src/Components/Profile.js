@@ -45,7 +45,7 @@ const skillsOptions = [
 const Profile = () => {
   const { userId } = useParams();
   const [profile, setProfile] = useState({
-    id: userId,
+    id: parseInt(userId),
     name: "",
     phone: "",
     email: "",

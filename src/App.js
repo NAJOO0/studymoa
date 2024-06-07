@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -12,6 +12,10 @@ import MyStudyGroups from "./Components/MyStudyGroups";
 import Home from "./Components/Home";
 import ViewProfile from "./Components/ViewProfile";
 import UserList from "./Components/UserList";
+import StudyHome from "./Components/StudyHome";
+import GoalList from "./Components/GoalList";
+import GoalDetail from "./Components/GoalDetail";
+import SetGoals from "./Components/SetGoals";
 import "./styles/App.css";
 
 const Navigation = () => {
@@ -37,6 +41,20 @@ const Navigation = () => {
 };
 
 const App = () => {
+  const [groups, setGroups] = useState([]);
+
+  useEffect(() => {
+    const storedGroups = localStorage.getItem("studyGroups");
+    if (storedGroups) {
+      setGroups(JSON.parse(storedGroups));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (groups.length > 0)
+      localStorage.setItem("studyGroups", JSON.stringify(groups));
+  }, [groups]);
+
   return (
     <Router>
       <div className="app">
@@ -60,7 +78,7 @@ const App = () => {
               element={
                 <>
                   <Navigation />
-                  <StudyGroup />
+                  <StudyGroup groups={groups} setGroups={setGroups} />
                 </>
               }
             />
@@ -69,7 +87,7 @@ const App = () => {
               element={
                 <>
                   <Navigation />
-                  <MyStudyGroups />
+                  <MyStudyGroups groups={groups} setGroups={setGroups} />
                 </>
               }
             />
@@ -90,6 +108,22 @@ const App = () => {
                   <UserList />
                 </>
               }
+            />
+            <Route
+              path="/study-home/:userId/:groupId"
+              element={<StudyHome groups={groups} setGroups={setGroups} />}
+            />
+            <Route
+              path="/study-home/:userId/:groupId/goals"
+              element={<GoalList groups={groups} setGroups={setGroups} />}
+            />
+            <Route
+              path="/study-home/:userId/:groupId/goal-detail/:goalIndex"
+              element={<GoalDetail groups={groups} setGroups={setGroups} />}
+            />
+            <Route
+              path="/study-home/:userId/:groupId/set-goals"
+              element={<SetGoals groups={groups} setGroups={setGroups} />}
             />
           </Routes>
         </main>

@@ -57,25 +57,39 @@ const StudyGroupList = ({ groups, showStatus }) => {
       ) : (
         <ul>
           {filteredGroups.map((group) => (
-            <li key={group.id}>
-              <Link to={`/study-group/${userId}/detail/${group.id}`}>
-                <h3>{group.title}</h3>
-                <p>{group.description}</p>
-                <p>Topic: {group.topic?.label}</p>
-                <p>Leader: {group.leader}</p>
-                <p>
-                  Members: {group.members.length}/{group.maxMembers}
-                </p>
-                <p>Applicants: {group.applicants.length}</p>
-                {showStatus &&
-                  (group.leaderId === parseInt(userId) ? (
-                    <p>Status: Leader</p>
-                  ) : group.members.includes(parseInt(userId)) ? (
-                    <p>Status: Member</p>
-                  ) : (
-                    <p>Status: Pending</p>
-                  ))}
-              </Link>
+            <li
+              key={group.id}
+              onClick={() =>
+                (window.location.href = `/study-group/${userId}/detail/${group.id}`)
+              }
+            >
+              <h3>{group.title}</h3>
+              <p>{group.description}</p>
+              <p>Topic: {group.topic?.label}</p>
+              <p>Leader: {group.leader}</p>
+              <p>
+                Members: {group.members.length}/{group.maxMembers}
+              </p>
+              <p>Applicants: {group.applicants.length}</p>
+              {showStatus &&
+                (group.leaderId === parseInt(userId) ? (
+                  <p>Status: Leader</p>
+                ) : group.members &&
+                  group.members.includes(parseInt(userId)) ? (
+                  <p>Status: Member</p>
+                ) : (
+                  <p>Status: Pending</p>
+                ))}
+              <div className="like-section">
+                <span className="like-count">{group.likes?.length || 0}</span>
+                <button
+                  className={`like-button ${
+                    group.likes?.includes(parseInt(userId)) ? "liked" : ""
+                  }`}
+                >
+                  {group.likes?.includes(parseInt(userId)) ? "❤️" : "♡"}
+                </button>
+              </div>
             </li>
           ))}
         </ul>

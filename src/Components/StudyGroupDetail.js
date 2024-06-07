@@ -1,8 +1,16 @@
 import React from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
+import { FaHeart, FaRegHeart } from "react-icons/fa";
 import "../styles/StudyGroupDetail.css";
 
-const StudyGroupDetail = ({ groups, onAccept, onReject, onEdit, onDelete }) => {
+const StudyGroupDetail = ({
+  groups,
+  setGroups,
+  onAccept,
+  onReject,
+  onEdit,
+  onDelete,
+}) => {
   const { userId, id } = useParams();
   const navigate = useNavigate();
   const group = groups.find((group) => group.id === parseInt(id));
@@ -14,6 +22,22 @@ const StudyGroupDetail = ({ groups, onAccept, onReject, onEdit, onDelete }) => {
   const isLeader = group.leaderId === parseInt(userId);
   const isApplicant = group.applicants.includes(parseInt(userId));
   const isMember = group.members.includes(parseInt(userId));
+  const isInvited = group.invited.includes(parseInt(userId));
+
+  const handleLike = () => {
+    const likedBy = group.likedBy || [];
+    const isLiked = likedBy.includes(parseInt(userId));
+    const updatedLikedBy = isLiked
+      ? likedBy.filter((id) => id !== parseInt(userId))
+      : [...likedBy, parseInt(userId)];
+
+    const updatedGroup = { ...group, likedBy: updatedLikedBy };
+    const updatedGroups = groups.map((g) =>
+      g.id === group.id ? updatedGroup : g
+    );
+    setGroups(updatedGroups);
+    localStorage.setItem("studyGroups", JSON.stringify(updatedGroups));
+  };
 
   const handleApply = () => {
     if (!isApplicant) {
@@ -54,11 +78,49 @@ const StudyGroupDetail = ({ groups, onAccept, onReject, onEdit, onDelete }) => {
     navigate(`/profile/${userId}/view/${memberId}`);
   };
 
+  const onAcceptInvitation = (groupId, userId) => {
+    const updatedGroup = {
+      ...group,
+      members: [...group.members, parseInt(userId)],
+      invited: group.invited.filter(
+        (invitedId) => invitedId !== parseInt(userId)
+      ),
+    };
+    const updatedGroups = groups.map((g) =>
+      g.id === group.id ? updatedGroup : g
+    );
+    setGroups(updatedGroups);
+    localStorage.setItem("studyGroups", JSON.stringify(updatedGroups));
+  };
+
+  const onRejectInvitation = (groupId, userId) => {
+    const updatedGroup = {
+      ...group,
+      invited: group.invited.filter(
+        (invitedId) => invitedId !== parseInt(userId)
+      ),
+    };
+    const updatedGroups = groups.map((g) =>
+      g.id === group.id ? updatedGroup : g
+    );
+    setGroups(updatedGroups);
+    localStorage.setItem("studyGroups", JSON.stringify(updatedGroups));
+  };
+
   return (
     <div className="study-group-detail">
-      <h2>Study Group Detail</h2>
+      <div className="like-section" onClick={handleLike}>
+        {group.likedBy.includes(parseInt(userId)) ? (
+          <FaHeart />
+        ) : (
+          <FaRegHeart />
+        )}
+        <span>{group.likedBy.length}</span>
+      </div>
+      <h2 className="center-text">Study Group Detail</h2>
       <h3>{group.title}</h3>
       <p>{group.description}</p>
+      <p>Topic: {group.topic?.label}</p>
       <h4>
         Members ({group.members.length}/{group.maxMembers}):
       </h4>
@@ -108,12 +170,22 @@ const StudyGroupDetail = ({ groups, onAccept, onReject, onEdit, onDelete }) => {
               >
                 {getMemberName(invitedId)}
               </button>
+              {isInvited && invitedId === parseInt(userId) && (
+                <>
+                  <button onClick={() => onAcceptInvitation(group.id, userId)}>
+                    Accept
+                  </button>
+                  <button onClick={() => onRejectInvitation(group.id, userId)}>
+                    Reject
+                  </button>
+                </>
+              )}
             </li>
           ))}
       </ul>
       <div className="detail-buttons">
         {isMember || isLeader ? (
-          <Link to={`/study-home/${group.id}`}>
+          <Link to={`/study-home/${userId}/${group.id}`}>
             <button className="group-home-button centered-button">
               Study Home
             </button>
