@@ -1,0 +1,80 @@
+.resource-page {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  text-align: left;
+}
+
+.resource-page h2 {
+  margin-bottom: 20px;
+}
+
+.resource-page ul {
+  list-style: none;
+  padding: 0;
+}
+
+.resource-page li {
+  margin-bottom: 10px;
+  padding: 10px;
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.resource-page li:hover {
+  background: #f1f1f1;
+}
+
+.resource-page textarea {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.resource-page input[type="file"] {
+  margin-bottom: 10px;
+}
+
+.resource-page button {
+  padding: 10px 20px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.resource-page button:hover {
+  background-color: #0056b3;
+}
+
+.buttons {
+  margin-bottom: 20px;
+}
+
+.back-home-button,
+.view-resources-button {
+  padding: 10px 20px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.back-home-button:hover,
+.view-resources-button:hover {
+  background-color: #0056b3;
+}
+
+.resource-buttons button {
+  margin-right: 5px;
+}

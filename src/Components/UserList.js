@@ -82,7 +82,10 @@ const UserList = () => {
     const storedGroups = localStorage.getItem("studyGroups");
     if (storedGroups) {
       const groups = JSON.parse(storedGroups);
-      const group = groups.find((group) => group.id === selectedGroup.value);
+      const groupIndex = groups.findIndex(
+        (group) => group.id === selectedGroup.value
+      );
+      const group = groups[groupIndex];
       if (group.members.length >= group.maxMembers) {
         alert("The group is already full.");
         return;
@@ -92,6 +95,7 @@ const UserList = () => {
       }
       if (!group.invited.includes(parseInt(profileId))) {
         group.invited.push(parseInt(profileId));
+        groups[groupIndex] = group; // Update the group in the array
         localStorage.setItem("studyGroups", JSON.stringify(groups));
         alert("User invited successfully!");
       } else {
@@ -110,6 +114,7 @@ const UserList = () => {
     <div className="user-list">
       <h2>User Profiles</h2>
       <Select
+        className="select"
         options={groups}
         value={selectedGroup}
         onChange={setSelectedGroup}

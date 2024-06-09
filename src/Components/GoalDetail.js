@@ -129,6 +129,27 @@ const GoalDetail = ({ groups, setGroups }) => {
     localStorage.setItem("studyGroups", JSON.stringify(updatedGroups));
   };
 
+  const handleGoalDelete = () => {
+    const updatedGroups = [...groups];
+    const groupIndex = updatedGroups.findIndex(
+      (group) => group.id === parseInt(groupId)
+    );
+    const goalToDelete = updatedGroups[groupIndex].goals[parseInt(goalIndex)];
+
+    updatedGroups[groupIndex].goals = updatedGroups[groupIndex].goals.filter(
+      (goal) => goal.id !== goalToDelete.id
+    );
+
+    // 관련 이벤트 삭제
+    updatedGroups[groupIndex].events = updatedGroups[groupIndex].events.filter(
+      (event) => event.id !== goalToDelete.id
+    );
+
+    setGroups(updatedGroups);
+    localStorage.setItem("studyGroups", JSON.stringify(updatedGroups));
+    navigate(`/study-home/${userId}/${groupId}/goals`);
+  };
+
   const getMemberName = (memberId) => {
     const profile = localStorage.getItem(`profile_${memberId}`);
     return profile ? JSON.parse(profile).name : "Unknown";
@@ -149,9 +170,8 @@ const GoalDetail = ({ groups, setGroups }) => {
       <h3>{goal.title}</h3>
       <p>Due Date: {new Date(goal.dueDate).toLocaleDateString()}</p>
       <p>Description: {goal.description}</p>
-      <p>Completion Criteria: {goal.completionCriteria}</p>
       <h3>Submissions</h3>
-      <ul>
+      <ul className="submissions-list">
         {(goal.submissions || []).map((submission, index) => (
           <li key={index}>
             <p>
@@ -190,6 +210,20 @@ const GoalDetail = ({ groups, setGroups }) => {
         <input type="file" onChange={handleFileChange} />
         <button type="submit">Submit</button>
       </form>
+      {group.leaderId === parseInt(userId) && (
+        <div className="leader-buttons">
+          <button
+            onClick={() =>
+              navigate(
+                `/study-home/${userId}/${groupId}/edit-goal/${goalIndex}`
+              )
+            }
+          >
+            Edit Goal
+          </button>
+          <button onClick={handleGoalDelete}>Delete Goal</button>
+        </div>
+      )}
     </div>
   );
 };

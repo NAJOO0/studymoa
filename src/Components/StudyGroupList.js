@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Select from "react-select";
+import { FaHeart, FaRegHeart } from "react-icons/fa";
 import "../styles/StudyGroupList.css";
 
 const studyTopicsOptions = [
@@ -18,8 +19,9 @@ const studyTopicsOptions = [
   { value: "ar-vr", label: "AR/VR" },
 ];
 
-const StudyGroupList = ({ groups, showStatus }) => {
+const StudyGroupList = ({ groups, showStatus, setGroups }) => {
   const { userId } = useParams();
+  const navigate = useNavigate();
   const [searchTitle, setSearchTitle] = useState("");
   const [selectedTopic, setSelectedTopic] = useState({
     value: "all",
@@ -35,6 +37,23 @@ const StudyGroupList = ({ groups, showStatus }) => {
       (group.topic && group.topic.value === selectedTopic.value);
     return matchesTitle && matchesTopic;
   });
+
+  const handleLikeClick = (groupId) => {
+    const updatedGroups = groups.map((group) => {
+      if (group.id === groupId) {
+        const isLiked = group.likes?.includes(parseInt(userId));
+        return {
+          ...group,
+          likes: isLiked
+            ? group.likes.filter((id) => id !== parseInt(userId))
+            : [...(group.likes || []), parseInt(userId)],
+        };
+      }
+      return group;
+    });
+    setGroups(updatedGroups);
+    localStorage.setItem("studyGroups", JSON.stringify(updatedGroups));
+  };
 
   return (
     <div className="study-group-list">
@@ -60,7 +79,7 @@ const StudyGroupList = ({ groups, showStatus }) => {
             <li
               key={group.id}
               onClick={() =>
-                (window.location.href = `/study-group/${userId}/detail/${group.id}`)
+                navigate(`/study-group/${userId}/detail/${group.id}`)
               }
             >
               <h3>{group.title}</h3>
@@ -80,15 +99,19 @@ const StudyGroupList = ({ groups, showStatus }) => {
                 ) : (
                   <p>Status: Pending</p>
                 ))}
-              <div className="like-section">
+              <div
+                className="like-section"
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent triggering the navigate event
+                  handleLikeClick(group.id);
+                }}
+              >
+                {group.likes?.includes(parseInt(userId)) ? (
+                  <FaHeart className="like-icon liked" />
+                ) : (
+                  <FaRegHeart className="like-icon" />
+                )}
                 <span className="like-count">{group.likes?.length || 0}</span>
-                <button
-                  className={`like-button ${
-                    group.likes?.includes(parseInt(userId)) ? "liked" : ""
-                  }`}
-                >
-                  {group.likes?.includes(parseInt(userId)) ? "❤️" : "♡"}
-                </button>
               </div>
             </li>
           ))}

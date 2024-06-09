@@ -16,6 +16,7 @@ import StudyHome from "./Components/StudyHome";
 import GoalList from "./Components/GoalList";
 import GoalDetail from "./Components/GoalDetail";
 import SetGoals from "./Components/SetGoals";
+import ResourcePage from "./Components/ResourcePage";
 import "./styles/App.css";
 
 const Navigation = () => {
@@ -50,11 +51,6 @@ const App = () => {
     }
   }, []);
 
-  useEffect(() => {
-    if (groups.length > 0)
-      localStorage.setItem("studyGroups", JSON.stringify(groups));
-  }, [groups]);
-
   return (
     <Router>
       <div className="app">
@@ -87,7 +83,7 @@ const App = () => {
               element={
                 <>
                   <Navigation />
-                  <MyStudyGroups groups={groups} setGroups={setGroups} />
+                  <MyStudyGroups />
                 </>
               }
             />
@@ -111,19 +107,57 @@ const App = () => {
             />
             <Route
               path="/study-home/:userId/:groupId"
-              element={<StudyHome groups={groups} setGroups={setGroups} />}
+              element={
+                <>
+                  <Navigation />
+                  <StudyHome groups={groups} setGroups={setGroups} />
+                </>
+              }
             />
             <Route
               path="/study-home/:userId/:groupId/goals"
-              element={<GoalList groups={groups} setGroups={setGroups} />}
+              element={
+                <>
+                  <Navigation />
+                  <GoalList groups={groups} />
+                </>
+              }
             />
             <Route
               path="/study-home/:userId/:groupId/goal-detail/:goalIndex"
-              element={<GoalDetail groups={groups} setGroups={setGroups} />}
+              element={
+                <>
+                  <Navigation />
+                  <GoalDetail groups={groups} setGroups={setGroups} />
+                </>
+              }
             />
             <Route
-              path="/study-home/:userId/:groupId/set-goals"
-              element={<SetGoals groups={groups} setGroups={setGroups} />}
+              path="/study-home/:userId/:groupId/set-goal"
+              element={
+                <>
+                  <Navigation />
+                  <SetGoals groups={groups} setGroups={setGroups} />
+                </>
+              }
+            />
+            <Route
+              path="/study-home/:userId/:groupId/edit-goal/:goalIndex"
+              element={
+                <>
+                  <Navigation />
+                  <SetGoals groups={groups} setGroups={setGroups} />
+                </>
+              }
+            />
+            <Route
+              path="/study-home/:userId/:groupId/resources"
+              element={
+                <>
+                  <Navigation />
+                  <ResourcePage groups={groups} setGroups={setGroups} />
+                </>
+              }
             />
           </Routes>
         </main>

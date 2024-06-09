@@ -5,7 +5,7 @@ import "../styles/GoalList.css";
 const GoalList = ({ groups }) => {
   const { userId, groupId } = useParams();
   const group = groups.find((group) => group.id === parseInt(groupId));
-  const goals = group?.goals || [];
+  const goals = group ? group.goals || [] : [];
 
   if (!group) {
     return <div>Loading...</div>;
@@ -20,9 +20,7 @@ const GoalList = ({ groups }) => {
       </div>
       <h2>Goals for {group.title}</h2>
       <ul>
-        {goals.length === 0 ? (
-          <p>No goals available.</p>
-        ) : (
+        {goals.length > 0 ? (
           goals
             .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
             .map((goal, index) => (
@@ -37,11 +35,13 @@ const GoalList = ({ groups }) => {
                 </Link>
               </li>
             ))
+        ) : (
+          <p>No goals have been set for this study group yet.</p>
         )}
       </ul>
       {group.leaderId === parseInt(userId) && (
         <div className="buttons">
-          <Link to={`/study-home/${userId}/${groupId}/set-goals`}>
+          <Link to={`/study-home/${userId}/${groupId}/set-goal`}>
             <button className="set-goal-button">Set Goal</button>
           </Link>
         </div>

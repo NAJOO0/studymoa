@@ -7,12 +7,22 @@
   border: 1px solid #ddd;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  text-align: left;
 }
 
-.goal-detail h2 {
-  margin: 10px 0; /* Add some margin */
-  text-align: center; /* Center align the title */
+.goal-detail .buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.goal-detail h2,
+.goal-detail h3 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.goal-detail h4 {
+  margin-top: 20px;
 }
 
 .goal-detail ul {
@@ -21,57 +31,74 @@
 }
 
 .goal-detail li {
-  margin: 10px 0;
-  padding: 10px;
-  background: #f9f9f9;
   border: 1px solid #ddd;
+  padding: 10px;
+  margin-bottom: 10px;
   border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
-.goal-detail li:hover {
-  background: #f1f1f1;
+.goal-detail .member-button {
+  background: none;
+  border: none;
+  color: #007bff;
+  cursor: pointer;
+  padding: 0;
+  margin-right: 10px;
 }
 
-.goal-detail h3 {
-  margin-top: 0;
+.goal-detail .member-button:hover {
+  text-decoration: underline;
 }
 
-.goal-detail textarea,
-.goal-detail input[type="file"],
-.goal-detail button {
+.goal-detail .submission {
+  display: flex;
+  flex-direction: column;
   width: 100%;
+}
+
+.goal-detail .submission p {
+  margin: 5px 0;
+}
+
+.goal-detail .submission-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+.goal-detail .submission-actions button {
+  margin-left: 10px;
+}
+
+.goal-detail .goal-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.goal-detail .goal-actions button {
+  margin-left: 10px;
+}
+
+.goal-detail form {
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+}
+
+.goal-detail form textarea {
+  resize: none;
+  height: 80px;
   margin-bottom: 10px;
 }
 
-.goal-detail button {
-  padding: 10px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
+.goal-detail form input[type="file"] {
+  margin-bottom: 10px;
 }
 
-.goal-detail button:hover {
-  background-color: #0056b3;
-}
-
-.goal-detail .buttons {
-  display: flex;
-  justify-content: flex-start; /* Align the button to the left */
-  margin-bottom: 10px; /* Add some margin */
-}
-
-.back-home-button {
-  padding: 7px; /* Reduce button padding */
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.8em; /* Reduce button font size */
-}
-
-.back-home-button:hover {
-  background-color: #0056b3;
+.goal-detail form button {
+  align-self: flex-end;
 }

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
+import Calendar from "./Calendar";
 import "../styles/StudyHome.css";
 
 const StudyHome = ({ groups, setGroups }) => {
@@ -21,9 +22,8 @@ const StudyHome = ({ groups, setGroups }) => {
   const hasGoals = goals.length > 0;
 
   const calculateFailedGoals = (memberId) => {
-    return group.penalties
-      ? group.penalties.filter((id) => id === memberId).length
-      : 0;
+    const penalties = group.penalties || [];
+    return penalties.filter((penalty) => penalty === memberId).length;
   };
 
   const earliestGoal = hasGoals
@@ -33,16 +33,17 @@ const StudyHome = ({ groups, setGroups }) => {
   return (
     <div className="study-home">
       <h2>Study Home: {group.title}</h2>
-      <div>
+      <div className="withdrawal-info">
         <p>Group Withdrawal Condition: {group.withdrawalCondition} failures</p>
         <ul>
           {group.members.map((memberId) => {
-            const profile = localStorage.getItem(`profile_${memberId}`);
-            const memberProfile = profile ? JSON.parse(profile) : null;
+            const memberProfile = JSON.parse(
+              localStorage.getItem(`profile_${memberId}`)
+            );
             return (
-              <li key={memberId}>
-                {memberProfile ? memberProfile.name : "Unknown"}:{" "}
-                {calculateFailedGoals(memberId)} / {group.withdrawalCondition}
+              <li key={memberId} className="member-info">
+                {memberProfile.name}: {calculateFailedGoals(memberId)} /{" "}
+                {group.withdrawalCondition}
               </li>
             );
           })}
@@ -61,18 +62,21 @@ const StudyHome = ({ groups, setGroups }) => {
         >
           <h3>Upcoming Goal</h3>
           <p>
-            <strong>{earliestGoal.description}</strong>
+            <strong>{earliestGoal.title}</strong>
           </p>
           <p>Due Date: {new Date(earliestGoal.dueDate).toLocaleDateString()}</p>
-          <p>Criteria: {earliestGoal.criteria}</p>
-          <p>Penalty: {earliestGoal.penalty}</p>
+          <p>Description: {earliestGoal.description}</p>
         </div>
       )}
       <div className="buttons">
         <Link to={`/study-home/${userId}/${groupId}/goals`}>
           <button className="view-goals-button">View Goals</button>
         </Link>
+        <Link to={`/study-home/${userId}/${groupId}/resources`}>
+          <button className="view-resources-button">View Resources</button>
+        </Link>
       </div>
+      <Calendar group={group} setGroups={setGroups} />
     </div>
   );
 };

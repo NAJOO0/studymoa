@@ -2,14 +2,11 @@ import React, { useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import EventForm from "./EventForm";
 import "../styles/Calendar.css";
 
-const Calendar = () => {
+const Calendar = ({ group, setGroups }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [events, setEvents] = useState([]);
   const [showEventForm, setShowEventForm] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
   const [newEvent, setNewEvent] = useState({
     id: null,
     title: "",
@@ -19,18 +16,26 @@ const Calendar = () => {
     color: "#0000ff",
   });
   const [editingEvent, setEditingEvent] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+
+  const events = group?.events || [];
 
   useEffect(() => {
-    const storedEvents = localStorage.getItem("events");
-    if (storedEvents) {
-      setEvents(JSON.parse(storedEvents));
+    const storedGroups = localStorage.getItem("studyGroups");
+    if (storedGroups) {
+      const updatedGroups = JSON.parse(storedGroups);
+      setGroups(updatedGroups);
     }
-  }, []);
+  }, [setGroups]);
 
   useEffect(() => {
-    if (events.length > 0)
-      localStorage.setItem("events", JSON.stringify(events));
-  }, [events]);
+    if (events.length > 0) {
+      const updatedGroups = JSON.parse(localStorage.getItem("studyGroups"));
+      const groupIndex = updatedGroups.findIndex((g) => g.id === group.id);
+      updatedGroups[groupIndex].events = events;
+      localStorage.setItem("studyGroups", JSON.stringify(updatedGroups));
+    }
+  }, [events, group.id]);
 
   const renderHeader = () => {
     return (
@@ -174,15 +179,25 @@ const Calendar = () => {
   };
 
   const handleEventSubmit = () => {
+    const updatedGroups = JSON.parse(localStorage.getItem("studyGroups"));
+    const groupIndex = updatedGroups.findIndex((g) => g.id === group.id);
+
+    if (!updatedGroups[groupIndex].events) {
+      updatedGroups[groupIndex].events = [];
+    }
+
     if (newEvent.id) {
-      setEvents(
-        events.map((event) => (event.id === newEvent.id ? newEvent : event))
+      updatedGroups[groupIndex].events = updatedGroups[groupIndex].events.map(
+        (event) => (event.id === newEvent.id ? newEvent : event)
       );
     } else {
-      const newEventId = events.length + 1;
+      const newEventId = updatedGroups[groupIndex].events.length + 1;
       const eventToAdd = { ...newEvent, id: newEventId };
-      setEvents([...events, eventToAdd]);
+      updatedGroups[groupIndex].events.push(eventToAdd);
     }
+
+    setGroups(updatedGroups);
+    localStorage.setItem("studyGroups", JSON.stringify(updatedGroups));
     setShowEventForm(false);
     setNewEvent({
       id: null,
@@ -211,7 +226,15 @@ const Calendar = () => {
   };
 
   const handleEventDelete = () => {
-    setEvents(events.filter((event) => event.id !== newEvent.id));
+    const updatedGroups = JSON.parse(localStorage.getItem("studyGroups"));
+    const groupIndex = updatedGroups.findIndex((g) => g.id === group.id);
+
+    updatedGroups[groupIndex].events = updatedGroups[groupIndex].events.filter(
+      (event) => event.id !== newEvent.id
+    );
+
+    setGroups(updatedGroups);
+    localStorage.setItem("studyGroups", JSON.stringify(updatedGroups));
     setShowEventForm(false);
     setNewEvent({
       id: null,

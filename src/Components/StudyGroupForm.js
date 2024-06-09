@@ -30,7 +30,9 @@ const StudyGroupForm = ({ onSave, editingGroup }) => {
     applicants: [],
     leaderId: parseInt(userId),
     invited: [],
-    withdrawalCondition: 3, // Default value for auto withdrawal condition
+    penalties: [],
+    likes: [],
+    withdrawalCondition: 3,
   });
 
   useEffect(() => {
@@ -94,7 +96,7 @@ const StudyGroupForm = ({ onSave, editingGroup }) => {
           />
         </label>
         <label>
-          Auto Withdrawal Condition (Number of Failures):
+          Withdrawal Condition:
           <input
             type="number"
             name="withdrawalCondition"

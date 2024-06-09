@@ -44,6 +44,7 @@
   border: 1px solid #ddd;
   border-radius: 4px;
   cursor: pointer;
+  position: relative;
 }
 
 .study-group-list li:hover {
@@ -62,6 +63,9 @@
   display: flex;
   align-items: center;
   margin-top: 10px;
+  position: absolute;
+  top: 10px; /* Adjust as needed */
+  right: 10px; /* Adjust as needed */
 }
 
 .like-icon {
@@ -70,6 +74,10 @@
   margin-right: 5px;
 }
 
-.like-icon:hover {
+.like-count {
+  font-size: 16px;
+}
+
+.like-icon.liked {
   color: red;
 }

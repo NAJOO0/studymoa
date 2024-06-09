@@ -8,7 +8,6 @@ const StudyGroupDetail = ({
   setGroups,
   onAccept,
   onReject,
-  onEdit,
   onDelete,
 }) => {
   const { userId, id } = useParams();
@@ -22,22 +21,6 @@ const StudyGroupDetail = ({
   const isLeader = group.leaderId === parseInt(userId);
   const isApplicant = group.applicants.includes(parseInt(userId));
   const isMember = group.members.includes(parseInt(userId));
-  const isInvited = group.invited.includes(parseInt(userId));
-
-  const handleLike = () => {
-    const likedBy = group.likedBy || [];
-    const isLiked = likedBy.includes(parseInt(userId));
-    const updatedLikedBy = isLiked
-      ? likedBy.filter((id) => id !== parseInt(userId))
-      : [...likedBy, parseInt(userId)];
-
-    const updatedGroup = { ...group, likedBy: updatedLikedBy };
-    const updatedGroups = groups.map((g) =>
-      g.id === group.id ? updatedGroup : g
-    );
-    setGroups(updatedGroups);
-    localStorage.setItem("studyGroups", JSON.stringify(updatedGroups));
-  };
 
   const handleApply = () => {
     if (!isApplicant) {
@@ -45,7 +28,10 @@ const StudyGroupDetail = ({
         ...group,
         applicants: [...group.applicants, parseInt(userId)],
       };
-      onEdit(updatedGroup);
+      const updatedGroups = groups.map((g) =>
+        g.id === group.id ? updatedGroup : g
+      );
+      setGroups(updatedGroups);
     }
   };
 
@@ -57,8 +43,25 @@ const StudyGroupDetail = ({
           (applicant) => applicant !== parseInt(userId)
         ),
       };
-      onEdit(updatedGroup);
+      const updatedGroups = groups.map((g) =>
+        g.id === group.id ? updatedGroup : g
+      );
+      setGroups(updatedGroups);
     }
+  };
+
+  const handleLikeClick = () => {
+    const updatedGroup = {
+      ...group,
+      likes: group.likes?.includes(parseInt(userId))
+        ? group.likes.filter((id) => id !== parseInt(userId))
+        : [...(group.likes || []), parseInt(userId)],
+    };
+    const updatedGroups = groups.map((g) =>
+      g.id === group.id ? updatedGroup : g
+    );
+    setGroups(updatedGroups);
+    localStorage.setItem("studyGroups", JSON.stringify(updatedGroups));
   };
 
   const handleAccept = (groupId, applicantId) => {
@@ -67,6 +70,33 @@ const StudyGroupDetail = ({
       return;
     }
     onAccept(groupId, applicantId);
+  };
+
+  const handleAcceptInvite = (invitedId) => {
+    if (group.members.length >= group.maxMembers) {
+      alert("The group is already full.");
+      return;
+    }
+    const updatedGroup = {
+      ...group,
+      members: [...group.members, invitedId],
+      invited: group.invited.filter((id) => id !== invitedId),
+    };
+    const updatedGroups = groups.map((g) =>
+      g.id === group.id ? updatedGroup : g
+    );
+    setGroups(updatedGroups);
+  };
+
+  const handleRejectInvite = (invitedId) => {
+    const updatedGroup = {
+      ...group,
+      invited: group.invited.filter((id) => id !== invitedId),
+    };
+    const updatedGroups = groups.map((g) =>
+      g.id === group.id ? updatedGroup : g
+    );
+    setGroups(updatedGroups);
   };
 
   const getMemberName = (id) => {
@@ -78,49 +108,11 @@ const StudyGroupDetail = ({
     navigate(`/profile/${userId}/view/${memberId}`);
   };
 
-  const onAcceptInvitation = (groupId, userId) => {
-    const updatedGroup = {
-      ...group,
-      members: [...group.members, parseInt(userId)],
-      invited: group.invited.filter(
-        (invitedId) => invitedId !== parseInt(userId)
-      ),
-    };
-    const updatedGroups = groups.map((g) =>
-      g.id === group.id ? updatedGroup : g
-    );
-    setGroups(updatedGroups);
-    localStorage.setItem("studyGroups", JSON.stringify(updatedGroups));
-  };
-
-  const onRejectInvitation = (groupId, userId) => {
-    const updatedGroup = {
-      ...group,
-      invited: group.invited.filter(
-        (invitedId) => invitedId !== parseInt(userId)
-      ),
-    };
-    const updatedGroups = groups.map((g) =>
-      g.id === group.id ? updatedGroup : g
-    );
-    setGroups(updatedGroups);
-    localStorage.setItem("studyGroups", JSON.stringify(updatedGroups));
-  };
-
   return (
     <div className="study-group-detail">
-      <div className="like-section" onClick={handleLike}>
-        {group.likedBy.includes(parseInt(userId)) ? (
-          <FaHeart />
-        ) : (
-          <FaRegHeart />
-        )}
-        <span>{group.likedBy.length}</span>
-      </div>
       <h2 className="center-text">Study Group Detail</h2>
       <h3>{group.title}</h3>
       <p>{group.description}</p>
-      <p>Topic: {group.topic?.label}</p>
       <h4>
         Members ({group.members.length}/{group.maxMembers}):
       </h4>
@@ -170,12 +162,12 @@ const StudyGroupDetail = ({
               >
                 {getMemberName(invitedId)}
               </button>
-              {isInvited && invitedId === parseInt(userId) && (
+              {invitedId === parseInt(userId) && (
                 <>
-                  <button onClick={() => onAcceptInvitation(group.id, userId)}>
+                  <button onClick={() => handleAcceptInvite(invitedId)}>
                     Accept
                   </button>
-                  <button onClick={() => onRejectInvitation(group.id, userId)}>
+                  <button onClick={() => handleRejectInvite(invitedId)}>
                     Reject
                   </button>
                 </>
@@ -209,7 +201,9 @@ const StudyGroupDetail = ({
           <>
             <button
               className="edit-delete-button"
-              onClick={() => onEdit(group)}
+              onClick={() =>
+                navigate(`/study-group/${userId}/edit/${group.id}`)
+              }
             >
               Edit Group
             </button>
@@ -221,6 +215,14 @@ const StudyGroupDetail = ({
             </button>
           </>
         )}
+      </div>
+      <div className="like-section" onClick={handleLikeClick}>
+        {group.likes?.includes(parseInt(userId)) ? (
+          <FaHeart color="red" />
+        ) : (
+          <FaRegHeart />
+        )}
+        <span className="like-count">{group.likes?.length || 0}</span>
       </div>
     </div>
   );

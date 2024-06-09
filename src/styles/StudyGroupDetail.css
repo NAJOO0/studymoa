@@ -90,15 +90,19 @@
 }
 
 .like-section {
-  position: absolute;
-  top: 20px;
-  right: 20px;
   display: flex;
   align-items: center;
   cursor: pointer;
+  position: absolute;
+  top: 20px;
+  right: 20px;
 }
 
 .like-section svg {
+  font-size: 20px; /* Adjust to match the icon size */
   margin-right: 5px;
-  color: #e74c3c;
+}
+
+.like-count {
+  font-size: 20px; /* Adjust to match the icon size */
 }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Route, Routes, Link, useParams } from "react-router-dom";
+import { Route, Routes, Link, useNavigate, useParams } from "react-router-dom";
 import StudyGroupForm from "./StudyGroupForm";
 import StudyGroupList from "./StudyGroupList";
 import StudyGroupDetail from "./StudyGroupDetail";
@@ -7,77 +7,76 @@ import "../styles/StudyGroup.css";
 
 const StudyGroup = ({ groups, setGroups }) => {
   const { userId } = useParams();
+  const [editingGroup, setEditingGroup] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const storedGroups = localStorage.getItem("studyGroups");
-    if (storedGroups) {
-      setGroups(JSON.parse(storedGroups));
+    if (groups.length === 0) {
+      const storedGroups = localStorage.getItem("studyGroups");
+      if (storedGroups) {
+        setGroups(JSON.parse(storedGroups));
+      }
     }
-  }, [setGroups]);
+  }, [userId]);
 
   useEffect(() => {
-    if (groups.length > 0)
+    if (groups.length > 0) {
       localStorage.setItem("studyGroups", JSON.stringify(groups));
-  }, [groups]);
+    }
+  }, [groups, userId]);
 
   const handleSaveGroup = (newGroup) => {
-    if (newGroup.id && groups.some((group) => group.id === newGroup.id)) {
-      const updatedGroups = groups.map((group) =>
-        group.id === newGroup.id ? newGroup : group
+    if (editingGroup) {
+      setGroups(
+        groups.map((group) => (group.id === editingGroup.id ? newGroup : group))
       );
-      setGroups(updatedGroups);
+      setEditingGroup(null);
     } else {
-      const newId = groups.length
-        ? Math.max(...groups.map((g) => g.id)) + 1
-        : 1;
-      const groupWithId = {
-        ...newGroup,
-        id: newId,
-        leaderId: parseInt(userId),
-        members: [parseInt(userId)],
-        likedBy: [],
-      };
-      setGroups([...groups, groupWithId]);
+      setGroups([...groups, newGroup]);
     }
+    navigate(`/study-group/${userId}`);
   };
 
   const handleDeleteGroup = (groupId) => {
     const updatedGroups = groups.filter((group) => group.id !== groupId);
     setGroups(updatedGroups);
-  };
-
-  const handleAcceptApplicant = (groupId, applicant) => {
-    const updatedGroups = groups.map((group) => {
-      if (group.id === groupId) {
-        return {
-          ...group,
-          currentMembers: group.currentMembers + 1,
-          applicants: group.applicants.filter((app) => app !== applicant),
-          members: [...group.members, applicant],
-        };
-      }
-      return group;
-    });
-    setGroups(updatedGroups);
-  };
-
-  const handleRejectApplicant = (groupId, applicant) => {
-    const updatedGroups = groups.map((group) => {
-      if (group.id === groupId) {
-        return {
-          ...group,
-          applicants: group.applicants.filter((app) => app !== applicant),
-        };
-      }
-      return group;
-    });
-    setGroups(updatedGroups);
+    localStorage.setItem("studyGroups", JSON.stringify(updatedGroups));
+    navigate(`/study-group/${userId}`);
   };
 
   const handleEditGroup = (group) => {
-    // Set the editing group and navigate to the edit form
-    const editingGroup = groups.find((g) => g.id === group.id);
-    setGroups(groups.map((g) => (g.id === group.id ? group : g)));
+    setEditingGroup(group);
+    navigate(`/study-group/${userId}/edit/${group.id}`);
+  };
+
+  const handleAcceptApplicant = (groupId, applicant) => {
+    setGroups(
+      groups.map((group) => {
+        if (group.id === groupId) {
+          return {
+            ...group,
+            currentMembers: group.currentMembers + 1,
+            applicants: group.applicants.filter((app) => app !== applicant),
+            members: [...group.members, applicant],
+          };
+        }
+        return group;
+      })
+    );
+  };
+
+  const handleRejectApplicant = (groupId, applicant) => {
+    setGroups(
+      groups.map((group) => {
+        if (group.id === groupId) {
+          return {
+            ...group,
+            applicants: group.applicants.filter((app) => app !== applicant),
+          };
+        }
+        return group;
+      })
+    );
   };
 
   return (
@@ -98,7 +97,13 @@ const StudyGroup = ({ groups, setGroups }) => {
         />
         <Route
           path="/edit/:id"
-          element={<StudyGroupForm onSave={handleSaveGroup} />}
+          element={
+            <StudyGroupForm
+              onSave={handleSaveGroup}
+              editingGroup={editingGroup}
+              groups={groups}
+            />
+          }
         />
         <Route
           path="/detail/:id"
@@ -108,7 +113,6 @@ const StudyGroup = ({ groups, setGroups }) => {
               setGroups={setGroups}
               onAccept={handleAcceptApplicant}
               onReject={handleRejectApplicant}
-              onEdit={handleEditGroup}
               onDelete={handleDeleteGroup}
             />
           }
