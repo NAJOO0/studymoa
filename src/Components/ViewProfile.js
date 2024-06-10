@@ -33,11 +33,11 @@ const ViewProfile = () => {
   };
 
   if (!profile) {
-    return <div>Profile not found</div>;
+    return <div>프로필을 찾을 수 없습니다.</div>;
   }
 
   if (visibility === "private" && parseInt(userId) !== parseInt(viewUserId)) {
-    return <div>This profile is private.</div>;
+    return <div>비공개 유저입니다.</div>;
   }
 
   if (
@@ -45,27 +45,27 @@ const ViewProfile = () => {
     !checkStudyMember() &&
     parseInt(userId) !== parseInt(viewUserId)
   ) {
-    return <div>This profile is private.</div>;
+    return <div>비공개 유저입니다.</div>;
   }
 
   return (
     <div className="view-profile">
-      <h2>{profile.name}'s Profile</h2>
+      <h2>{profile.name}의 프로필</h2>
       <p>
-        <strong>Phone:</strong> {profile.phone}
+        <strong>전화번호:</strong> {profile.phone}
       </p>
       <p>
-        <strong>Email:</strong> {profile.email}
+        <strong>이메일:</strong> {profile.email}
       </p>
       <p>
-        <strong>Bio:</strong> {profile.bio}
+        <strong>설명:</strong> {profile.bio}
       </p>
       <p>
-        <strong>Interests:</strong>{" "}
+        <strong>관심 분야:</strong>{" "}
         {profile.interests.map((interest) => interest.label).join(", ")}
       </p>
       <p>
-        <strong>Skills:</strong>{" "}
+        <strong>기술 스택:</strong>{" "}
         {profile.skills.map((skill) => skill.label).join(", ")}
       </p>
     </div>

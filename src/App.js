@@ -25,16 +25,16 @@ const Navigation = () => {
     <nav>
       <ul>
         <li>
-          <Link to={`/profile/${userId}`}>Profile</Link>
+          <Link to={`/profile/${userId}`}>프로필</Link>
         </li>
         <li>
-          <Link to={`/users/${userId}`}>User Profiles</Link>
+          <Link to={`/users/${userId}`}>유저 목록</Link>
         </li>
         <li>
-          <Link to={`/my-study-groups/${userId}`}>My Study Groups</Link>
+          <Link to={`/my-study-groups/${userId}`}>내 스터디 목록</Link>
         </li>
         <li>
-          <Link to={`/study-group/${userId}`}>Study Groups</Link>
+          <Link to={`/study-group/${userId}`}>스터디 목록</Link>
         </li>
       </ul>
     </nav>
@@ -55,7 +55,7 @@ const App = () => {
     <Router>
       <div className="app">
         <header>
-          <h1>Study Management App</h1>
+          <h1>StudyMoa</h1>
         </header>
         <main>
           <Routes>
@@ -101,7 +101,7 @@ const App = () => {
               element={
                 <>
                   <Navigation />
-                  <UserList />
+                  <UserList groups={groups} setGroups={setGroups} />
                 </>
               }
             />

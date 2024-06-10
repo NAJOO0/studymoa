@@ -95,10 +95,10 @@ const ResourcePage = ({ groups, setGroups }) => {
     <div className="resource-page">
       <div className="buttons">
         <Link to={`/study-home/${userId}/${groupId}`}>
-          <button className="back-home-button">Back to Study Home</button>
+          <button className="back-home-button">스터디 홈으로</button>
         </Link>
       </div>
-      <h2>Resources for {group.title}</h2>
+      <h2>공유 자료</h2>
       <ul>
         {(group.resources || []).map((resource, index) => (
           <li key={index}>
@@ -109,17 +109,17 @@ const ResourcePage = ({ groups, setGroups }) => {
             {resource.file && (
               <p>
                 <button onClick={() => downloadFile(resource.file)}>
-                  Download File
+                  파일 다운로드
                 </button>
               </p>
             )}
-            <p>Date: {new Date(resource.date).toLocaleDateString()}</p>
+            <p>공유 날짜: {new Date(resource.date).toLocaleDateString()}</p>
             {(resource.userId === parseInt(userId) ||
               group.leaderId === parseInt(userId)) && (
               <div className="resource-buttons">
-                <button onClick={() => handleEditResource(index)}>Edit</button>
+                <button onClick={() => handleEditResource(index)}>수정</button>
                 <button onClick={() => handleDeleteResource(index)}>
-                  Delete
+                  삭제
                 </button>
               </div>
             )}
@@ -133,13 +133,13 @@ const ResourcePage = ({ groups, setGroups }) => {
         }}
       >
         <textarea
-          placeholder="Enter resource description"
+          placeholder="자료 설명란"
           value={resource}
           onChange={handleResourceChange}
         />
         <input type="file" onChange={handleFileChange} />
         <button type="submit">
-          {editingResource !== null ? "Update Resource" : "Add Resource"}
+          {editingResource !== null ? "자료 수정" : "자료 등록"}
         </button>
       </form>
     </div>

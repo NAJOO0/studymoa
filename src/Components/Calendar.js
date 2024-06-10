@@ -4,7 +4,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import "../styles/Calendar.css";
 
-const Calendar = ({ group, setGroups }) => {
+const Calendar = ({ group, setGroups, userId }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [showEventForm, setShowEventForm] = useState(false);
   const [newEvent, setNewEvent] = useState({
@@ -14,11 +14,14 @@ const Calendar = ({ group, setGroups }) => {
     startDate: new Date(),
     endDate: new Date(),
     color: "#0000ff",
+    isGoalEvent: false,
   });
   const [editingEvent, setEditingEvent] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
 
   const events = group?.events || [];
+
+  const isMember = group.members.includes(parseInt(userId));
 
   useEffect(() => {
     const storedGroups = localStorage.getItem("studyGroups");
@@ -141,15 +144,24 @@ const Calendar = ({ group, setGroups }) => {
   };
 
   const onDateClick = (day) => {
+    if (!isMember) {
+      alert("Only group members can add events.");
+      return;
+    }
+
     const event = events.find((event) => {
       const eventStartDate = new Date(event.startDate);
       const eventEndDate = new Date(event.endDate);
       return day >= eventStartDate && day <= eventEndDate;
     });
     if (event) {
+      if (event.isGoalEvent) {
+        alert("Goal events cannot be edited.");
+        return;
+      }
       setEditingEvent(event);
       setNewEvent(event);
-      setIsEditing(false);
+      setIsEditing(true);
       setShowEventForm(true);
     } else {
       setEditingEvent(null);
@@ -160,8 +172,9 @@ const Calendar = ({ group, setGroups }) => {
         startDate: day,
         endDate: day,
         color: "#0000ff",
+        isGoalEvent: false,
       });
-      setIsEditing(true);
+      setIsEditing(false);
       setShowEventForm(true);
     }
   };
@@ -181,10 +194,6 @@ const Calendar = ({ group, setGroups }) => {
   const handleEventSubmit = () => {
     const updatedGroups = JSON.parse(localStorage.getItem("studyGroups"));
     const groupIndex = updatedGroups.findIndex((g) => g.id === group.id);
-
-    if (!updatedGroups[groupIndex].events) {
-      updatedGroups[groupIndex].events = [];
-    }
 
     if (newEvent.id) {
       updatedGroups[groupIndex].events = updatedGroups[groupIndex].events.map(
@@ -206,6 +215,7 @@ const Calendar = ({ group, setGroups }) => {
       startDate: new Date(),
       endDate: new Date(),
       color: "#0000ff",
+      isGoalEvent: false,
     });
     setEditingEvent(null);
     setIsEditing(false);
@@ -220,6 +230,7 @@ const Calendar = ({ group, setGroups }) => {
       startDate: new Date(),
       endDate: new Date(),
       color: "#0000ff",
+      isGoalEvent: false,
     });
     setEditingEvent(null);
     setIsEditing(false);
@@ -243,6 +254,7 @@ const Calendar = ({ group, setGroups }) => {
       startDate: new Date(),
       endDate: new Date(),
       color: "#0000ff",
+      isGoalEvent: false,
     });
     setEditingEvent(null);
     setIsEditing(false);
@@ -260,46 +272,45 @@ const Calendar = ({ group, setGroups }) => {
               <h2>{newEvent.title}</h2>
               <p>{newEvent.description}</p>
               <p>
-                Start: {new Date(newEvent.startDate).toLocaleDateString()} -
-                End: {new Date(newEvent.endDate).toLocaleDateString()}
+                시작: {new Date(newEvent.startDate).toLocaleDateString()} -
+                종료: {new Date(newEvent.endDate).toLocaleDateString()}
               </p>
               <div className="buttons">
-                <button onClick={() => setIsEditing(true)}>Edit</button>
                 <button onClick={handleEventCancel}>Close</button>
               </div>
             </>
           ) : (
             <>
-              <h2>{editingEvent ? "Edit Event" : "Add Event"}</h2>
+              <h2>{editingEvent ? "일정 수정" : "일정 등록"}</h2>
               <input
                 type="text"
-                placeholder="Event Title"
+                placeholder="일정 제목"
                 value={newEvent.title}
                 onChange={(e) => handleEventChange("title", e.target.value)}
               />
               <textarea
-                placeholder="Event Description"
+                placeholder="일정 설명"
                 value={newEvent.description}
                 onChange={(e) =>
                   handleEventChange("description", e.target.value)
                 }
               />
               <div>
-                <label>Start Date</label>
+                <label>시작일</label>
                 <DatePicker
                   selected={newEvent.startDate}
                   onChange={(date) => handleEventChange("startDate", date)}
                 />
               </div>
               <div>
-                <label>End Date</label>
+                <label>종료일</label>
                 <DatePicker
                   selected={newEvent.endDate}
                   onChange={(date) => handleEventChange("endDate", date)}
                 />
               </div>
               <div>
-                <label>Event Color</label>
+                <label>일정 색</label>
                 <input
                   type="color"
                   value={newEvent.color}
@@ -308,11 +319,11 @@ const Calendar = ({ group, setGroups }) => {
               </div>
               <div className="buttons">
                 <button onClick={handleEventSubmit}>
-                  {editingEvent ? "Update Event" : "Add Event"}
+                  {editingEvent ? "일정 수정" : "일정 등록"}
                 </button>
-                <button onClick={handleEventCancel}>Cancel</button>
+                <button onClick={handleEventCancel}>닫기</button>
                 {editingEvent && (
-                  <button onClick={handleEventDelete}>Delete</button>
+                  <button onClick={handleEventDelete}>일정 삭제</button>
                 )}
               </div>
             </>

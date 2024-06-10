@@ -14,7 +14,7 @@ const StudyHome = ({ groups, setGroups }) => {
   }, [groups, groupId]);
 
   if (!group) {
-    return <div>Loading...</div>;
+    return <div>스터디가 없음</div>;
   }
 
   const isLeader = group.leaderId === parseInt(userId);
@@ -32,9 +32,9 @@ const StudyHome = ({ groups, setGroups }) => {
 
   return (
     <div className="study-home">
-      <h2>Study Home: {group.title}</h2>
+      <h2>스터디 {group.title}</h2>
       <div className="withdrawal-info">
-        <p>Group Withdrawal Condition: {group.withdrawalCondition} failures</p>
+        <p>목표치 도달 실패</p>
         <ul>
           {group.members.map((memberId) => {
             const memberProfile = JSON.parse(
@@ -60,23 +60,23 @@ const StudyHome = ({ groups, setGroups }) => {
             )
           }
         >
-          <h3>Upcoming Goal</h3>
+          <h3>다가오는 목표</h3>
           <p>
             <strong>{earliestGoal.title}</strong>
           </p>
-          <p>Due Date: {new Date(earliestGoal.dueDate).toLocaleDateString()}</p>
-          <p>Description: {earliestGoal.description}</p>
+          <p>마감기한: {new Date(earliestGoal.dueDate).toLocaleDateString()}</p>
+          <p>설명: {earliestGoal.description}</p>
         </div>
       )}
       <div className="buttons">
         <Link to={`/study-home/${userId}/${groupId}/goals`}>
-          <button className="view-goals-button">View Goals</button>
+          <button className="view-goals-button">목표 목록</button>
         </Link>
         <Link to={`/study-home/${userId}/${groupId}/resources`}>
-          <button className="view-resources-button">View Resources</button>
+          <button className="view-resources-button">자료 공유</button>
         </Link>
       </div>
-      <Calendar group={group} setGroups={setGroups} />
+      <Calendar group={group} setGroups={setGroups} userId={userId} />
     </div>
   );
 };

@@ -22,12 +22,16 @@
 }
 
 .goal-detail h4 {
+  text-align: center;
   margin-top: 20px;
 }
 
 .goal-detail ul {
   list-style: none;
   padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .goal-detail li {
@@ -37,7 +41,9 @@
   border-radius: 4px;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
+  text-align: center;
+  width: 20%;
 }
 
 .goal-detail .member-button {
@@ -57,6 +63,8 @@
   display: flex;
   flex-direction: column;
   width: 100%;
+  align-items: center;
+  text-align: center;
 }
 
 .goal-detail .submission p {
@@ -65,7 +73,7 @@
 
 .goal-detail .submission-actions {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   margin-top: 10px;
 }
 
@@ -75,7 +83,7 @@
 
 .goal-detail .goal-actions {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   margin-top: 20px;
 }
 
@@ -87,18 +95,32 @@
   display: flex;
   flex-direction: column;
   margin-top: 20px;
+  width: 100%;
+  max-width: 900px;
+  align-items: center;
 }
 
 .goal-detail form textarea {
   resize: none;
   height: 80px;
   margin-bottom: 10px;
+  width: 100%;
+}
+
+.goal-detail form .form-row {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
 }
 
 .goal-detail form input[type="file"] {
   margin-bottom: 10px;
+  flex: 2;
 }
 
-.goal-detail form button {
+.goal-detail form button[type="submit"] {
+  margin-bottom: 10px;
+  flex: 1;
+  max-width: 100px;
   align-self: flex-end;
 }

@@ -78,12 +78,11 @@ const StudyGroup = ({ groups, setGroups }) => {
       })
     );
   };
-
   return (
     <div className="study-group">
       <div className="button-container">
         <Link to={`/study-group/${userId}/new`}>
-          <button>Create Study Group</button>
+          <button>스터디 생성</button>
         </Link>
       </div>
       <Routes>
@@ -101,7 +100,6 @@ const StudyGroup = ({ groups, setGroups }) => {
             <StudyGroupForm
               onSave={handleSaveGroup}
               editingGroup={editingGroup}
-              groups={groups}
             />
           }
         />
@@ -114,6 +112,7 @@ const StudyGroup = ({ groups, setGroups }) => {
               onAccept={handleAcceptApplicant}
               onReject={handleRejectApplicant}
               onDelete={handleDeleteGroup}
+              onEdit={handleEditGroup}
             />
           }
         />

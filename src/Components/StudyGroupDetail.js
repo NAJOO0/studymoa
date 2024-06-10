@@ -9,6 +9,7 @@ const StudyGroupDetail = ({
   onAccept,
   onReject,
   onDelete,
+  onEdit,
 }) => {
   const { userId, id } = useParams();
   const navigate = useNavigate();
@@ -110,11 +111,12 @@ const StudyGroupDetail = ({
 
   return (
     <div className="study-group-detail">
-      <h2 className="center-text">Study Group Detail</h2>
+      <h2 className="center-text">스터디 상세 페이지</h2>
       <h3>{group.title}</h3>
+      <h4>스터디 분야 : {group.topic.label}</h4>
       <p>{group.description}</p>
       <h4>
-        Members ({group.members.length}/{group.maxMembers}):
+        스터디 멤버 ({group.members.length}/{group.maxMembers})
       </h4>
       <ul>
         {group.members.map((memberId, index) => (
@@ -128,7 +130,7 @@ const StudyGroupDetail = ({
           </li>
         ))}
       </ul>
-      <h4>Applicants:</h4>
+      <h4>지원자</h4>
       <ul>
         {group.applicants.map((applicantId, index) => (
           <li key={index}>
@@ -141,17 +143,17 @@ const StudyGroupDetail = ({
             {isLeader && (
               <>
                 <button onClick={() => handleAccept(group.id, applicantId)}>
-                  Accept
+                  수락
                 </button>
                 <button onClick={() => onReject(group.id, applicantId)}>
-                  Reject
+                  거절
                 </button>
               </>
             )}
           </li>
         ))}
       </ul>
-      <h4>Invited Users:</h4>
+      <h4>초대된 유저:</h4>
       <ul>
         {group.invited &&
           group.invited.map((invitedId, index) => (
@@ -165,10 +167,10 @@ const StudyGroupDetail = ({
               {invitedId === parseInt(userId) && (
                 <>
                   <button onClick={() => handleAcceptInvite(invitedId)}>
-                    Accept
+                    수락
                   </button>
                   <button onClick={() => handleRejectInvite(invitedId)}>
-                    Reject
+                    거절
                   </button>
                 </>
               )}
@@ -179,7 +181,7 @@ const StudyGroupDetail = ({
         {isMember || isLeader ? (
           <Link to={`/study-home/${userId}/${group.id}`}>
             <button className="group-home-button centered-button">
-              Study Home
+              스터디 홈으로
             </button>
           </Link>
         ) : isApplicant ? (
@@ -187,31 +189,29 @@ const StudyGroupDetail = ({
             onClick={handleCancelApply}
             className="apply-button centered-button"
           >
-            Cancel Apply
+            스터디 지원 취소
           </button>
         ) : (
           <button
             onClick={handleApply}
             className="apply-button centered-button"
           >
-            Apply to Join
+            스터디 지원
           </button>
         )}
         {isLeader && (
           <>
             <button
               className="edit-delete-button"
-              onClick={() =>
-                navigate(`/study-group/${userId}/edit/${group.id}`)
-              }
+              onClick={() => onEdit(group)}
             >
-              Edit Group
+              스터디 수정
             </button>
             <button
               className="edit-delete-button"
               onClick={() => onDelete(group.id)}
             >
-              Delete Group
+              스터디 삭제
             </button>
           </>
         )}

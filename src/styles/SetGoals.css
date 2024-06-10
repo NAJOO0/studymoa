@@ -7,12 +7,11 @@
   border: 1px solid #ddd;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  text-align: left;
 }
 
 .set-goals h2 {
-  margin-bottom: 20px;
   text-align: center;
+  margin-bottom: 20px;
 }
 
 .set-goals form {
@@ -20,33 +19,37 @@
   flex-direction: column;
 }
 
-.set-goals .goal {
-  margin-bottom: 20px;
-}
-
 .set-goals label {
-  display: block;
-  margin-bottom: 5px;
+  margin-bottom: 15px;
   font-weight: bold;
 }
 
-.set-goals input[type="text"],
-.set-goals input[type="date"] {
+.set-goals label.block-label {
+  display: block;
   width: 100%;
-  padding: 8px;
-  margin-bottom: 10px;
+}
+
+.set-goals input,
+.set-goals textarea {
+  width: 100%;
+  padding: 10px;
   border: 1px solid #ddd;
   border-radius: 4px;
+  margin-top: 5px;
+}
+
+.set-goals textarea {
+  resize: vertical;
 }
 
 .set-goals button {
-  padding: 10px 20px;
-  border: none;
+  padding: 10px;
   background-color: #007bff;
   color: white;
-  cursor: pointer;
+  border: none;
   border-radius: 4px;
-  margin-top: 10px;
+  cursor: pointer;
+  margin-top: 20px;
 }
 
 .set-goals button:hover {

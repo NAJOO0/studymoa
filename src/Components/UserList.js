@@ -3,11 +3,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import Select from "react-select";
 import "../styles/UserList.css";
 
-const UserList = () => {
+const UserList = ({ groups, setGroups }) => {
   const { userId } = useParams();
   const [users, setUsers] = useState([]);
   const navigate = useNavigate();
-  const [groups, setGroups] = useState([]);
   const [selectedGroup, setSelectedGroup] = useState(null);
 
   useEffect(() => {
@@ -27,45 +26,26 @@ const UserList = () => {
       }
     }
     setUsers(userList);
-
-    const storedGroups = localStorage.getItem("studyGroups");
-    if (storedGroups) {
-      const userGroups = JSON.parse(storedGroups).filter(
-        (group) => group.leaderId === parseInt(userId)
-      );
-      setGroups(
-        userGroups.map((group) => ({ value: group.id, label: group.title }))
-      );
-    }
   }, [userId]);
 
   const checkStudyMember = (profileId) => {
-    const storedGroups = localStorage.getItem("studyGroups");
-    if (storedGroups) {
-      const groups = JSON.parse(storedGroups);
-      return groups.some(
-        (group) =>
-          (group.members.includes(parseInt(profileId)) ||
-            group.applicants.includes(parseInt(profileId))) &&
-          group.members.includes(parseInt(userId))
-      );
-    }
-    return false;
+    return groups.some(
+      (group) =>
+        (group.members.includes(parseInt(profileId)) ||
+          group.applicants.includes(parseInt(profileId))) &&
+        group.members.includes(parseInt(userId))
+    );
   };
 
   const isAlreadyInGroup = (profileId) => {
     if (!selectedGroup) return false;
-    const storedGroups = localStorage.getItem("studyGroups");
-    if (storedGroups) {
-      const groups = JSON.parse(storedGroups);
-      const group = groups.find((group) => group.id === selectedGroup.value);
-      if (group) {
-        return (
-          group.members.includes(parseInt(profileId)) ||
-          group.applicants.includes(parseInt(profileId)) ||
-          (group.invited && group.invited.includes(parseInt(profileId)))
-        );
-      }
+    const group = groups.find((group) => group.id === selectedGroup.value);
+    if (group) {
+      return (
+        group.members.includes(parseInt(profileId)) ||
+        group.applicants.includes(parseInt(profileId)) ||
+        (group.invited && group.invited.includes(parseInt(profileId)))
+      );
     }
     return false;
   };
@@ -76,31 +56,30 @@ const UserList = () => {
 
   const handleInvite = (profileId) => {
     if (!selectedGroup) {
-      alert("Please select a group to invite the user to.");
+      alert("초대할 스터디를 선택하세요.");
       return;
     }
-    const storedGroups = localStorage.getItem("studyGroups");
-    if (storedGroups) {
-      const groups = JSON.parse(storedGroups);
-      const groupIndex = groups.findIndex(
-        (group) => group.id === selectedGroup.value
-      );
-      const group = groups[groupIndex];
-      if (group.members.length >= group.maxMembers) {
-        alert("The group is already full.");
-        return;
-      }
-      if (!group.invited) {
-        group.invited = [];
-      }
-      if (!group.invited.includes(parseInt(profileId))) {
-        group.invited.push(parseInt(profileId));
-        groups[groupIndex] = group; // Update the group in the array
-        localStorage.setItem("studyGroups", JSON.stringify(groups));
-        alert("User invited successfully!");
-      } else {
-        alert("User is already invited.");
-      }
+    const groupIndex = groups.findIndex(
+      (group) => group.id === selectedGroup.value
+    );
+    const group = { ...groups[groupIndex] };
+
+    if (group.members.length >= group.maxMembers) {
+      alert("인원이 가득 찼습니다.");
+      return;
+    }
+    if (!group.invited) {
+      group.invited = [];
+    }
+    if (!group.invited.includes(parseInt(profileId))) {
+      group.invited.push(parseInt(profileId));
+      const updatedGroups = [...groups];
+      updatedGroups[groupIndex] = group;
+      setGroups(updatedGroups);
+      localStorage.setItem("studyGroups", JSON.stringify(updatedGroups));
+      alert("초대가 완료되었습니다.");
+    } else {
+      alert("이미 초대한 유저입니다.");
     }
   };
 
@@ -110,15 +89,22 @@ const UserList = () => {
     });
   };
 
+  const leaderGroups = groups.filter(
+    (group) => group.leaderId === parseInt(userId)
+  );
+
   return (
     <div className="user-list">
-      <h2>User Profiles</h2>
+      <h2>유저 목록</h2>
       <Select
         className="select"
-        options={groups}
+        options={leaderGroups.map((group) => ({
+          value: group.id,
+          label: group.title,
+        }))}
         value={selectedGroup}
         onChange={setSelectedGroup}
-        placeholder="Select a group to invite to"
+        placeholder="초대할 스터디를 선택하세요."
       />
       <ul>
         {getFilteredUsers().map((user) => (
@@ -126,7 +112,7 @@ const UserList = () => {
             <h3 onClick={() => handleProfileClick(user.id)}>{user.name}</h3>
             <p>{user.bio}</p>
             <button onClick={() => handleInvite(user.id)}>
-              Invite to Group
+              스터디에 초대하기
             </button>
           </li>
         ))}

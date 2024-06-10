@@ -73,27 +73,27 @@ const Profile = () => {
 
   return (
     <div className="profile">
-      <h2>Profile</h2>
+      <h2>프로필</h2>
       <input
         type="text"
-        placeholder="Name"
+        placeholder="이름"
         value={profile.name}
         onChange={(e) => handleChange("name", e.target.value)}
       />
       <input
         type="text"
-        placeholder="Phone"
+        placeholder="전화번호"
         value={profile.phone}
         onChange={(e) => handleChange("phone", e.target.value)}
       />
       <input
         type="email"
-        placeholder="Email"
+        placeholder="이메일"
         value={profile.email}
         onChange={(e) => handleChange("email", e.target.value)}
       />
       <textarea
-        placeholder="Bio"
+        placeholder="설명"
         value={profile.bio}
         onChange={(e) => handleChange("bio", e.target.value)}
       />
@@ -104,24 +104,24 @@ const Profile = () => {
         onChange={(selectedOptions) =>
           handleChange("interests", selectedOptions)
         }
-        placeholder="Select Interests"
+        placeholder="관심 분야"
       />
       <Select
         isMulti
         options={skillsOptions}
         value={profile.skills}
         onChange={(selectedOptions) => handleChange("skills", selectedOptions)}
-        placeholder="Select Skills"
+        placeholder="기술 스택"
       />
       <select
         value={profile.visibility}
         onChange={(e) => handleChange("visibility", e.target.value)}
       >
-        <option value="public">Public</option>
-        <option value="private">Private</option>
-        <option value="study-members">Study Members</option>
+        <option value="public">공개</option>
+        <option value="private">비공개</option>
+        <option value="study-members">스터디원에게만 공개</option>
       </select>
-      <button onClick={handleSave}>Save Profile</button>
+      <button onClick={handleSave}>프로필 저장</button>
     </div>
   );
 };

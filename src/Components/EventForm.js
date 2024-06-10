@@ -16,31 +16,31 @@ const EventForm = ({
       <h2>{editingEvent ? "Edit Event" : "Add Event"}</h2>
       <input
         type="text"
-        placeholder="Event Title"
+        placeholder="일정 제목"
         value={newEvent.title}
         onChange={(e) => handleEventChange("title", e.target.value)}
       />
       <textarea
-        placeholder="Event Description"
+        placeholder="일정 설명"
         value={newEvent.description}
         onChange={(e) => handleEventChange("description", e.target.value)}
       />
       <div>
-        <label>Start Date</label>
+        <label>시작일</label>
         <DatePicker
           selected={newEvent.startDate}
           onChange={(date) => handleEventChange("startDate", date)}
         />
       </div>
       <div>
-        <label>End Date</label>
+        <label>종료일</label>
         <DatePicker
           selected={newEvent.endDate}
           onChange={(date) => handleEventChange("endDate", date)}
         />
       </div>
       <div>
-        <label>Event Color</label>
+        <label>색깔</label>
         <input
           type="color"
           value={newEvent.color}
@@ -49,10 +49,10 @@ const EventForm = ({
       </div>
       <div className="buttons">
         <button onClick={handleEventSubmit}>
-          {editingEvent ? "Update Event" : "Add Event"}
+          {editingEvent ? "일정 수정" : "일정 등록"}
         </button>
-        <button onClick={handleEventCancel}>Cancel</button>
-        {editingEvent && <button onClick={handleEventDelete}>Delete</button>}
+        <button onClick={handleEventCancel}>닫기</button>
+        {editingEvent && <button onClick={handleEventDelete}>일정 삭제</button>}
       </div>
     </div>
   );

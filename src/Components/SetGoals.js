@@ -10,6 +10,7 @@ const SetGoals = ({ groups, setGroups }) => {
     title: "",
     description: "",
     dueDate: new Date(),
+    startDate: new Date(new Date().setDate(new Date().getDate() - 1)), // default start date is yesterday
   });
 
   useEffect(() => {
@@ -55,20 +56,22 @@ const SetGoals = ({ groups, setGroups }) => {
           title: goal.title,
           description: goal.description,
           endDate: new Date(goal.dueDate),
+          startDate: new Date(goal.dueDate - 24 * 60 * 60 * 1000),
         };
       }
     } else {
       const newGoalId = new Date().getTime();
       const newGoal = { ...goal, id: newGoalId };
       updatedGroups[groupIndex].goals.push(newGoal);
-
       const newEvent = {
         id: newGoalId,
         title: newGoal.title,
         description: newGoal.description,
-        startDate: new Date(new Date().setDate(new Date().getDate() - 1)),
+        //  the day before endDate as startDate
+        startDate: new Date(newGoal.dueDate - 24 * 60 * 60 * 1000),
         endDate: new Date(newGoal.dueDate),
         color: "#ff0000",
+        isGoalEvent: true,
       };
 
       if (!updatedGroups[groupIndex].events) {
@@ -84,10 +87,10 @@ const SetGoals = ({ groups, setGroups }) => {
 
   return (
     <div className="set-goals">
-      <h2>{goalIndex !== undefined ? "Edit Goal" : "Set Goal"}</h2>
+      <h2>{goalIndex !== undefined ? "목표 수정" : "목표 등록"}</h2>
       <form onSubmit={handleSubmit}>
         <label>
-          Title:
+          제목
           <input
             type="text"
             name="title"
@@ -97,7 +100,7 @@ const SetGoals = ({ groups, setGroups }) => {
           />
         </label>
         <label>
-          Description:
+          설명
           <textarea
             name="description"
             value={goal.description}
@@ -107,17 +110,19 @@ const SetGoals = ({ groups, setGroups }) => {
           ></textarea>
         </label>
         <label>
-          Due Date:
+          마감 기한
           <input
             type="date"
             name="dueDate"
             value={goal.dueDate.toISOString().split("T")[0]}
-            onChange={(e) => handleChange("dueDate", new Date(e.target.value))}
+            onChange={(e) => {
+              handleChange("dueDate", new Date(e.target.value));
+            }}
             required
           />
         </label>
         <button type="submit">
-          {goalIndex !== undefined ? "Save Changes" : "Set Goal"}
+          {goalIndex !== undefined ? "목표 수정" : "목표 등록"}
         </button>
       </form>
     </div>

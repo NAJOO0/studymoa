@@ -15,7 +15,7 @@ const Home = () => {
 
   return (
     <div className="home">
-      <h2>Enter User ID</h2>
+      <h2>유저 ID를 입력하세요.</h2>
       <form onSubmit={handleSubmit}>
         <input
           type="text"

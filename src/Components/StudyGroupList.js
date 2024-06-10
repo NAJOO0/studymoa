@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Select from "react-select";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import "../styles/StudyGroupList.css";
 
 const studyTopicsOptions = [
-  { value: "all", label: "All" },
+  { value: "all", label: "전체" },
   { value: "web-development", label: "Web Development" },
   { value: "app-development", label: "App Development" },
   { value: "ai", label: "AI" },
@@ -19,24 +19,39 @@ const studyTopicsOptions = [
   { value: "ar-vr", label: "AR/VR" },
 ];
 
+const sortOptions = [
+  { value: "newest", label: "최신순" },
+  { value: "likes", label: "좋아요 순" },
+];
+
 const StudyGroupList = ({ groups, showStatus, setGroups }) => {
   const { userId } = useParams();
   const navigate = useNavigate();
   const [searchTitle, setSearchTitle] = useState("");
   const [selectedTopic, setSelectedTopic] = useState({
     value: "all",
-    label: "All",
+    label: "전체",
   });
+  const [selectedSort, setSelectedSort] = useState(sortOptions[0]);
 
-  const filteredGroups = groups.filter((group) => {
-    const matchesTitle = group.title
-      .toLowerCase()
-      .includes(searchTitle.toLowerCase());
-    const matchesTopic =
-      selectedTopic.value === "all" ||
-      (group.topic && group.topic.value === selectedTopic.value);
-    return matchesTitle && matchesTopic;
-  });
+  const filteredGroups = groups
+    .filter((group) => {
+      const matchesTitle = group.title
+        .toLowerCase()
+        .includes(searchTitle.toLowerCase());
+      const matchesTopic =
+        selectedTopic.value === "all" ||
+        (group.topic && group.topic.value === selectedTopic.value);
+      return matchesTitle && matchesTopic;
+    })
+    .sort((a, b) => {
+      if (selectedSort.value === "newest") {
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      } else if (selectedSort.value === "likes") {
+        return (b.likes?.length || 0) - (a.likes?.length || 0);
+      }
+      return 0;
+    });
 
   const handleLikeClick = (groupId) => {
     const updatedGroups = groups.map((group) => {
@@ -52,7 +67,18 @@ const StudyGroupList = ({ groups, showStatus, setGroups }) => {
       return group;
     });
     setGroups(updatedGroups);
-    localStorage.setItem("studyGroups", JSON.stringify(updatedGroups));
+    updateLocalStorageGroups(updatedGroups);
+  };
+
+  const updateLocalStorageGroups = (updatedGroups) => {
+    const storedGroups = JSON.parse(localStorage.getItem("studyGroups")) || [];
+    const mergedGroups = storedGroups.map(
+      (storedGroup) =>
+        updatedGroups.find(
+          (updatedGroup) => updatedGroup.id === storedGroup.id
+        ) || storedGroup
+    );
+    localStorage.setItem("studyGroups", JSON.stringify(mergedGroups));
   };
 
   return (
@@ -60,7 +86,7 @@ const StudyGroupList = ({ groups, showStatus, setGroups }) => {
       <div className="search-bar">
         <input
           type="text"
-          placeholder="Search by title..."
+          placeholder="제목으로 검색"
           value={searchTitle}
           onChange={(e) => setSearchTitle(e.target.value)}
         />
@@ -68,11 +94,17 @@ const StudyGroupList = ({ groups, showStatus, setGroups }) => {
           options={studyTopicsOptions}
           value={selectedTopic}
           onChange={setSelectedTopic}
-          placeholder="Filter by topic"
+          placeholder="분야별 검색"
+        />
+        <Select
+          options={sortOptions}
+          value={selectedSort}
+          onChange={setSelectedSort}
+          placeholder="정렬"
         />
       </div>
       {filteredGroups.length === 0 ? (
-        <p>No study groups available.</p>
+        <p>스터디가 없습니다.</p>
       ) : (
         <ul>
           {filteredGroups.map((group) => (
@@ -84,20 +116,23 @@ const StudyGroupList = ({ groups, showStatus, setGroups }) => {
             >
               <h3>{group.title}</h3>
               <p>{group.description}</p>
-              <p>Topic: {group.topic?.label}</p>
-              <p>Leader: {group.leader}</p>
+              <p>분야: {group.topic?.label}</p>
               <p>
-                Members: {group.members.length}/{group.maxMembers}
+                스터디장:
+                {group.leaderName}
               </p>
-              <p>Applicants: {group.applicants.length}</p>
+              <p>
+                멤버: {group.members.length}/{group.maxMembers}
+              </p>
+              <p>지원자: {group.applicants.length}명</p>
               {showStatus &&
                 (group.leaderId === parseInt(userId) ? (
-                  <p>Status: Leader</p>
+                  <p>직위: 스터디장</p>
                 ) : group.members &&
                   group.members.includes(parseInt(userId)) ? (
-                  <p>Status: Member</p>
+                  <p>직위: 멤버</p>
                 ) : (
-                  <p>Status: Pending</p>
+                  <p>상태: 승인 대기중</p>
                 ))}
               <div
                 className="like-section"

@@ -9,6 +9,7 @@ const GoalDetail = ({ groups, setGroups }) => {
   const [goal, setGoal] = useState(null);
   const [submission, setSubmission] = useState("");
   const [file, setFile] = useState(null);
+  const [penalizedMembers, setPenalizedMembers] = useState([]);
 
   useEffect(() => {
     const foundGroup = groups.find((group) => group.id === parseInt(groupId));
@@ -17,6 +18,15 @@ const GoalDetail = ({ groups, setGroups }) => {
       setGoal(foundGroup.goals[parseInt(goalIndex)]);
     }
   }, [groups, groupId, goalIndex]);
+
+  useEffect(() => {
+    const penalizedData = localStorage.getItem(
+      `penalized_${groupId}_${goalIndex}`
+    );
+    if (penalizedData) {
+      setPenalizedMembers(JSON.parse(penalizedData));
+    }
+  }, [groupId, goalIndex]);
 
   const handleSubmissionChange = (e) => {
     setSubmission(e.target.value);
@@ -31,7 +41,7 @@ const GoalDetail = ({ groups, setGroups }) => {
       userId: parseInt(userId),
       text: submission,
       file: file,
-      status: "pending",
+      status: "대기중",
     };
 
     const updatedGroups = [...groups];
@@ -64,7 +74,7 @@ const GoalDetail = ({ groups, setGroups }) => {
 
     updatedGroups[groupIndex].goals[goalIndex].submissions[
       submissionIndex
-    ].status = "approved";
+    ].status = "승인";
 
     setGroups(updatedGroups);
     localStorage.setItem("studyGroups", JSON.stringify(updatedGroups));
@@ -84,7 +94,7 @@ const GoalDetail = ({ groups, setGroups }) => {
 
     updatedGroups[groupIndex].goals[goalIndex].submissions[
       submissionIndex
-    ].status = "rejected";
+    ].status = "미승인";
     updatedGroups[groupIndex].penalties = [
       ...(updatedGroups[groupIndex].penalties || []),
       rejectedUserId,
@@ -106,7 +116,7 @@ const GoalDetail = ({ groups, setGroups }) => {
       alert(
         `${getMemberName(
           rejectedUserId
-        )} has been removed from the group due to exceeding penalties.`
+        )}님이 스터디 탈퇴 조건을 달성해서 자동으로 탈퇴됩니다.`
       );
 
       // If the leader is removed, assign a new leader
@@ -115,12 +125,19 @@ const GoalDetail = ({ groups, setGroups }) => {
           updatedGroups[groupIndex].leaderId =
             updatedGroups[groupIndex].members[0]; // Assign the first member as the new leader
           alert(
-            `The new leader is ${getMemberName(
+            `새로운 스터디장 ${getMemberName(
               updatedGroups[groupIndex].leaderId
             )}.`
           );
         } else {
-          updatedGroups[groupIndex].leaderId = null; // No members left to assign as leader
+          // No members left, delete the group
+          updatedGroups.splice(groupIndex, 1);
+          localStorage.removeItem(`penalized_${groupId}_${goalIndex}`);
+          setGroups(updatedGroups);
+          localStorage.setItem("studyGroups", JSON.stringify(updatedGroups));
+          alert("스터디에 남아있는 멤버가 없어 스터디가 삭제됩니다.");
+          navigate(`/my-study-groups/${userId}`);
+          return;
         }
       }
     }
@@ -140,14 +157,79 @@ const GoalDetail = ({ groups, setGroups }) => {
       (goal) => goal.id !== goalToDelete.id
     );
 
-    // 관련 이벤트 삭제
+    // Delete related events
     updatedGroups[groupIndex].events = updatedGroups[groupIndex].events.filter(
       (event) => event.id !== goalToDelete.id
     );
 
+    // Delete penalized data
+    localStorage.removeItem(`penalized_${groupId}_${goalIndex}`);
+
     setGroups(updatedGroups);
     localStorage.setItem("studyGroups", JSON.stringify(updatedGroups));
     navigate(`/study-home/${userId}/${groupId}/goals`);
+  };
+
+  const handlePenalizeUnsubmittedMember = (memberId) => {
+    const updatedGroups = [...groups];
+    const groupIndex = updatedGroups.findIndex(
+      (group) => group.id === parseInt(groupId)
+    );
+
+    updatedGroups[groupIndex].penalties = [
+      ...(updatedGroups[groupIndex].penalties || []),
+      memberId,
+    ];
+
+    const userPenalties = updatedGroups[groupIndex].penalties.filter(
+      (id) => id === memberId
+    ).length;
+    if (
+      userPenalties >= parseInt(updatedGroups[groupIndex].withdrawalCondition)
+    ) {
+      updatedGroups[groupIndex].members = updatedGroups[
+        groupIndex
+      ].members.filter((id) => id !== memberId);
+      updatedGroups[groupIndex].penalties = updatedGroups[
+        groupIndex
+      ].penalties.filter((id) => id !== memberId);
+      alert(
+        `${getMemberName(
+          memberId
+        )}님이 스터디 탈퇴 조건을 달성해서 자동으로 탈퇴됩니다.`
+      );
+
+      // If the leader is removed, assign a new leader
+      if (memberId === updatedGroups[groupIndex].leaderId) {
+        if (updatedGroups[groupIndex].members.length > 0) {
+          updatedGroups[groupIndex].leaderId =
+            updatedGroups[groupIndex].members[0]; // Assign the first member as the new leader
+          alert(
+            `새로운 스터디장 ${getMemberName(
+              updatedGroups[groupIndex].leaderId
+            )}.`
+          );
+        } else {
+          // No members left, delete the group
+          updatedGroups.splice(groupIndex, 1);
+          localStorage.removeItem(`penalized_${groupId}_${goalIndex}`);
+          setGroups(updatedGroups);
+          localStorage.setItem("studyGroups", JSON.stringify(updatedGroups));
+          alert("스터디에 남아있는 멤버가 없어 스터디가 삭제됩니다.");
+          navigate(`/my-study-groups/${userId}`);
+          return;
+        }
+      }
+    }
+
+    const updatedPenalizedMembers = [...penalizedMembers, memberId];
+    setPenalizedMembers(updatedPenalizedMembers);
+    localStorage.setItem(
+      `penalized_${groupId}_${goalIndex}`,
+      JSON.stringify(updatedPenalizedMembers)
+    );
+    setGroups(updatedGroups);
+    localStorage.setItem("studyGroups", JSON.stringify(updatedGroups));
   };
 
   const getMemberName = (memberId) => {
@@ -159,21 +241,49 @@ const GoalDetail = ({ groups, setGroups }) => {
     return <div>Loading...</div>;
   }
 
+  const unsubmittedMembers = group.members.filter(
+    (memberId) =>
+      !goal.submissions?.some((submission) => submission.userId === memberId)
+  );
+
   return (
     <div className="goal-detail">
       <div className="buttons">
         <Link to={`/study-home/${userId}/${groupId}`}>
-          <button className="back-home-button">Back to Study Home</button>
+          <button className="back-home-button">스터디 홈으로</button>
         </Link>
       </div>
-      <h2>Goal Detail</h2>
+      <h2>목표 상세페이지</h2>
       <h3>{goal.title}</h3>
-      <p>Due Date: {new Date(goal.dueDate).toLocaleDateString()}</p>
-      <p>Description: {goal.description}</p>
-      <h3>Submissions</h3>
+      <p>마감 기한 : {new Date(goal.dueDate).toLocaleDateString()}</p>
+      <p>설명 : {goal.description}</p>
+
+      {group.leaderId === parseInt(userId) && (
+        <>
+          <h3>미제출 멤버</h3>
+          <ul className="unsubmitted-members-list">
+            {unsubmittedMembers.map((memberId) => (
+              <li key={memberId}>
+                {getMemberName(memberId)}
+                {penalizedMembers.includes(memberId) ? (
+                  <span>미제출 처리 완료</span>
+                ) : (
+                  <button
+                    onClick={() => handlePenalizeUnsubmittedMember(memberId)}
+                  >
+                    미제출
+                  </button>
+                )}
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+
+      <h3>제출물</h3>
       <ul className="submissions-list">
         {(goal.submissions || []).map((submission, index) => (
-          <li key={index}>
+          <li key={index} className="submission">
             <p>
               <strong>{getMemberName(submission.userId)}</strong>
             </p>
@@ -181,16 +291,16 @@ const GoalDetail = ({ groups, setGroups }) => {
             {submission.file && (
               <p>
                 <a href={URL.createObjectURL(submission.file)} download>
-                  Download File
+                  다운로드
                 </a>
               </p>
             )}
-            <p>Status: {submission.status}</p>
+            <p>처리 상태 : {submission.status}</p>
             {group.leaderId === parseInt(userId) &&
-              submission.status === "pending" && (
-                <div>
-                  <button onClick={() => handleApprove(index)}>Approve</button>
-                  <button onClick={() => handleReject(index)}>Reject</button>
+              submission.status === "대기중" && (
+                <div className="submission-actions">
+                  <button onClick={() => handleApprove(index)}>승인</button>
+                  <button onClick={() => handleReject(index)}>미승인</button>
                 </div>
               )}
           </li>
@@ -203,15 +313,17 @@ const GoalDetail = ({ groups, setGroups }) => {
         }}
       >
         <textarea
-          placeholder="Enter your completion text"
+          placeholder="제출물 설명 입력란."
           value={submission}
           onChange={handleSubmissionChange}
         />
-        <input type="file" onChange={handleFileChange} />
-        <button type="submit">Submit</button>
+        <div className="form-row">
+          <input type="file" onChange={handleFileChange} />
+          <button type="submit">제출</button>
+        </div>
       </form>
       {group.leaderId === parseInt(userId) && (
-        <div className="leader-buttons">
+        <div className="goal-actions">
           <button
             onClick={() =>
               navigate(
@@ -219,9 +331,9 @@ const GoalDetail = ({ groups, setGroups }) => {
               )
             }
           >
-            Edit Goal
+            목표 수정
           </button>
-          <button onClick={handleGoalDelete}>Delete Goal</button>
+          <button onClick={handleGoalDelete}>목표 삭제</button>
         </div>
       )}
     </div>

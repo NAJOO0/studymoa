@@ -20,6 +20,8 @@ const topicOptions = [
 const StudyGroupForm = ({ onSave, editingGroup }) => {
   const { userId } = useParams();
   const navigate = useNavigate();
+  const leaderProfile = localStorage.getItem(`profile_${parseInt(userId)}`);
+  const leaderName = leaderProfile ? JSON.parse(leaderProfile).name : "Unknown";
   const [group, setGroup] = useState({
     id: editingGroup ? editingGroup.id : Date.now(),
     title: "",
@@ -29,10 +31,12 @@ const StudyGroupForm = ({ onSave, editingGroup }) => {
     members: [parseInt(userId)],
     applicants: [],
     leaderId: parseInt(userId),
+    leaderName: leaderName,
     invited: [],
     penalties: [],
     likes: [],
     withdrawalCondition: 3,
+    createdAt: new Date().toISOString(),
   });
 
   useEffect(() => {
@@ -53,10 +57,10 @@ const StudyGroupForm = ({ onSave, editingGroup }) => {
 
   return (
     <div className="study-group-form">
-      <h2>{editingGroup ? "Edit Study Group" : "Create Study Group"}</h2>
+      <h2>{editingGroup ? "스터디 수정" : "스터디 생성"}</h2>
       <form onSubmit={handleSubmit}>
         <label>
-          Title:
+          제목:
           <input
             type="text"
             name="title"
@@ -66,7 +70,7 @@ const StudyGroupForm = ({ onSave, editingGroup }) => {
           />
         </label>
         <label>
-          Description:
+          설명:
           <textarea
             name="description"
             value={group.description}
@@ -75,17 +79,17 @@ const StudyGroupForm = ({ onSave, editingGroup }) => {
           ></textarea>
         </label>
         <label>
-          Topic:
+          분야:
           <Select
             options={topicOptions}
             value={group.topic}
             onChange={(selectedOption) => handleChange("topic", selectedOption)}
-            placeholder="Select Topic"
+            placeholder="분야를 선택하세요."
             required
           />
         </label>
         <label>
-          Max Members:
+          최대 인원:
           <input
             type="number"
             name="maxMembers"
@@ -96,7 +100,7 @@ const StudyGroupForm = ({ onSave, editingGroup }) => {
           />
         </label>
         <label>
-          Withdrawal Condition:
+          자동 탈퇴 조건:
           <input
             type="number"
             name="withdrawalCondition"
@@ -109,7 +113,7 @@ const StudyGroupForm = ({ onSave, editingGroup }) => {
           />
         </label>
         <button type="submit">
-          {editingGroup ? "Save Changes" : "Create Group"}
+          {editingGroup ? "수정사항 저장" : "스터디 생성"}
         </button>
       </form>
     </div>
